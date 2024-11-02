@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Weather App</title>
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="container p-7">
+      <h1 class="text-2xl">This application uses the OPEN WEATHER API</h1>
+      <form action="/weather" method="get">
+        <input type="text" name="city" placeholder="Enter city name" />
+        <button type="submit">Get Weather</button>
+      </form>
+      ` <% if (error) { %>
+      <p class="error"><%= error %></p>
+      <% } else if (weather) { %>
+      <div class="card m-auto">
+        
+        <%  let santigrad = (weather.main.temp - 32) * 5 / 9  %>
+        <%  let Minsantigrad = (weather.main.temp_min - 32) * 5 / 9  %>
+        <%  let Maxsantigrad = (weather.main.temp_max - 32) * 5 / 9  %>
+
+        <div>
+          
+            <table class="w-1/2 m-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 rounded-s-lg">
+                          <span class="text-base text-gray-900"><%=weather.name%>, <%=weather.sys.country%> </span>
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                          <span>Last Update: <%= convertUnixToTime(weather.dt) %></span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                        <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          <span>Temperature: </span>
+                        </th>
+                        <td class="px-6 py-3">
+                          <%=santigrad.toFixed(2)%>&deg;S
+                        </td>
+                    </tr>
+                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                        <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          <span>Min Temperature: </span>
+                        </th>
+                        <td class="px-6 py-3">
+                          <%=Minsantigrad.toFixed(2)%>&deg;S
+                        </td>
+                    </tr>
+                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                        <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          <span>Max Temperature: </span>
+                        </th>
+                        <td class="px-6 py-3">
+                          <%=Maxsantigrad.toFixed(2)%>&deg;S
+                        </td>
+                    </tr>
+                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                      <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <span>Humidity: </span>
+                      </th>
+                      <td class="px-6 py-3">
+                        <%=weather.main.humidity%>%
+                      </td>
+                      </tr>
+                      <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                        <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          <span>Atmospheric pressure on the sea level: </span>
+                        </th>
+                        <td class="px-6 py-3">
+                          <%=weather.main.pressure%>
+                        </td>
+                    </tr>
+                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                      <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <span>Weather: </span>
+                      </th>
+                      <td class="px-6 py-3">
+                        <%=weather.weather[0].main%>, -- <%=weather.weather[0].description%>, -- <%=weather.weather[0].icon%>
+                      </td>
+                    </tr>
+                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                      <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <span>Wind Speed: </span>
+                      </th>
+                      <td class="px-6 py-3">
+                      <%=weather.wind.speed%>
+                    </td>
+                    </tr>
+                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                      <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <span>Wind Direction: </span>
+                      </th>
+                      <td class="px-6 py-3">
+                        <%=weather.wind.deg%>
+                      </td>
+                    </tr>
+                      <% 
+                          function convertUnixToTime(unixTimestamp) {
+                              var date = new Date(unixTimestamp * 1000);
+                              var hours = date.getHours();
+                              var minutes = date.getMinutes();
+                              var seconds = date.getSeconds();
+                              minutes = minutes < 10 ? '0' + minutes : minutes;
+                              seconds = seconds < 10 ? '0' + seconds : seconds;
+                              return hours + ':' + minutes + ':' + seconds;
+                          }
+                      %>
+                  <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                    <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                      <span>Sunrise time:</span>
+                    </th>
+                    <td class="px-6 py-3">
+                      <%= convertUnixToTime(weather.sys.sunrise) %>
+                    </td>
+                  </tr>
+                  <tr class="bg-white dark:bg-gray-800">
+                    <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                      <span>Sunset time:</span>
+                    </th>
+                    <td class="px-6 py-3">
+                      <%= convertUnixToTime(weather.sys.sunset) %>
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+          
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </body>
+</html>
