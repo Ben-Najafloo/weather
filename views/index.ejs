@@ -1,137 +1,295 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Weather App</title>
-    <link rel="stylesheet" type="text/css" href="/style.css" />
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body>
-    <div class="container p-7">
-      <h1 class="text-2xl">This application uses the OPEN WEATHER API</h1>
-      <form action="/weather" method="get">
-        <input type="text" name="city" placeholder="Enter city name" />
-        <button type="submit">Get Weather</button>
-      </form>
-      ` <% if (error) { %>
-      <p class="error"><%= error %></p>
-      <% } else if (weather) { %>
-      <div class="card m-auto">
-        
-        <%  let santigrad = (weather.main.temp - 32) * 5 / 9  %>
-        <%  let Minsantigrad = (weather.main.temp_min - 32) * 5 / 9  %>
-        <%  let Maxsantigrad = (weather.main.temp_max - 32) * 5 / 9  %>
+    <link rel="stylesheet" type="text/css" href="/style.css" />
 
-        <div>
+    <!-- map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="bg-white">
+        
+      
+        <div class="relative isolate px-6 lg:px-8">
           
-            <table class="w-1/2 m-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 rounded-s-lg">
-                          <span class="text-base text-gray-900"><%=weather.name%>, <%=weather.sys.country%> </span>
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                          <span>Last Update: <%= convertUnixToTime(weather.dt) %></span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
-                        <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          <span>Temperature: </span>
-                        </th>
-                        <td class="px-6 py-3">
-                          <%=santigrad.toFixed(2)%>&deg;S
-                        </td>
-                    </tr>
-                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
-                        <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          <span>Min Temperature: </span>
-                        </th>
-                        <td class="px-6 py-3">
-                          <%=Minsantigrad.toFixed(2)%>&deg;S
-                        </td>
-                    </tr>
-                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
-                        <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          <span>Max Temperature: </span>
-                        </th>
-                        <td class="px-6 py-3">
-                          <%=Maxsantigrad.toFixed(2)%>&deg;S
-                        </td>
-                    </tr>
-                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
-                      <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <span>Humidity: </span>
-                      </th>
-                      <td class="px-6 py-3">
-                        <%=weather.main.humidity%>%
-                      </td>
-                      </tr>
-                      <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
-                        <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                          <span>Atmospheric pressure on the sea level: </span>
-                        </th>
-                        <td class="px-6 py-3">
-                          <%=weather.main.pressure%>
-                        </td>
-                    </tr>
-                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
-                      <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <span>Weather: </span>
-                      </th>
-                      <td class="px-6 py-3">
-                        <%=weather.weather[0].main%>, -- <%=weather.weather[0].description%>, -- <%=weather.weather[0].icon%>
-                      </td>
-                    </tr>
-                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
-                      <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <span>Wind Speed: </span>
-                      </th>
-                      <td class="px-6 py-3">
-                      <%=weather.wind.speed%>
-                    </td>
-                    </tr>
-                    <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
-                      <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <span>Wind Direction: </span>
-                      </th>
-                      <td class="px-6 py-3">
-                        <%=weather.wind.deg%>
-                      </td>
-                    </tr>
-                      <% 
-                          function convertUnixToTime(unixTimestamp) {
-                              var date = new Date(unixTimestamp * 1000);
-                              var hours = date.getHours();
-                              var minutes = date.getMinutes();
-                              var seconds = date.getSeconds();
-                              minutes = minutes < 10 ? '0' + minutes : minutes;
-                              seconds = seconds < 10 ? '0' + seconds : seconds;
-                              return hours + ':' + minutes + ':' + seconds;
-                          }
-                      %>
-                  <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
-                    <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      <span>Sunrise time:</span>
-                    </th>
-                    <td class="px-6 py-3">
-                      <%= convertUnixToTime(weather.sys.sunrise) %>
-                    </td>
-                  </tr>
-                  <tr class="bg-white dark:bg-gray-800">
-                    <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      <span>Sunset time:</span>
-                    </th>
-                    <td class="px-6 py-3">
-                      <%= convertUnixToTime(weather.sys.sunset) %>
-                    </td>
-                  </tr>
-                </tbody>
-            </table>
+          <div class="mx-auto py-2 sm:py-48 lg:py-5">
+            
+            <div class="text-center">
+              <h1 class="text-balance text-2xl font-semibold tracking-tight text-gray-900">This application uses the OPEN WEATHER API</h1>
+              <p class="mt-4 text-pretty text-lg font-medium text-gray-500 sm:text-xl/8">Type the city name and see the weather, you can also select the locatoion on the map.</p>
+              <div class="flex">
+                <div class="mt-7 flex gap-x-6 w-1/2 bg-gray-100">
+                    <!-- map -->
+                  <div id="map" style="height: 570px; width: 900px;"></div>
+                  <script>
+                    // Initialize the map
+                    var map = L.map('map').setView([20, 0], 2);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                      maxZoom: 19,
+                      attribution: '© OpenStreetMap'
+                    }).addTo(map);
+
+
+
+                    map.on('click', function (e) {
+                      const { lat, lng } = e.latlng;
+                      const apiKey = '59cbbd11e182415bbe56fb1fc9135110';
+
+                      let cityInput = document.getElementById('city-input');
+
+                      fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
+                          .then(response => response.json())
+                          .then(data => {
+                          const city = data.results[0].components.city || data.results[0].components.town || "Unknown location";
+                          L.popup()
+                              .setLatLng([lat, lng])
+                              .setContent("Nearest city: " + city)
+                              .openOn(map);
+                              console.log(city)
+                              cityInput.value = city ;
+                          })
+                          .catch(error => console.error('Error:', error));
+                      });
+
+                  </script>
+                <!-- end of map -->
+                </div>
+    
+                <div class="mt-2 items-center justify-center gap-x-6 w-1/2">
+                  <form action="/weather" method="get">
+                    <input type="text" id="city-input" name="city" list="cities" placeholder="Enter city name" />
+                     <datalist id="cities">
+                      <option value="Berlin" />
+                      <option value="Madrid" />
+                      <option value="Rome" />
+                      <option value="Paris" />
+                      <option value="Vienna" />
+                      <option value="Hamburg" />
+                      <option value="Warsaw" />
+                      <option value="Bucharest" />
+                      <option value="Budapest" />
+                      <option value="Barcelona" />
+                      <option value="Munich" />
+                      <option value="Prague" />
+                      <option value="Milan" />
+                      <option value="Sofia" />
+                      <option value="Cologne" />
+                      <option value="Stockholm" />
+                      <option value="Amsterdam" />
+                      <option value="Naples" />
+                      <option value="Marseille" />
+                      <option value="Turin" />
+                      <option value="Valencia" />
+                      <option value="Kraków" />
+                      <option value="Frankfurt" />
+                      <option value="Zagreb" />
+                      <option value="Seville" />
+                      <option value="Zaragoza" />
+                      <option value="Helsinki" />
+                      <option value="Wrocław" />
+                      <option value="Rotterdam" />
+                      <option value="Copenhagen" />
+                      <option value="Łódź" />
+                      <option value="Athens" />
+                      <option value="Stuttgart" />
+                      <option value="Düsseldorf" />
+                      <option value="Palermo" />
+                      <option value="Leipzig" />
+                      <option value="Riga" />
+                      <option value="Vilnius" />
+                      <option value="Gothenburg" />
+                      <option value="Dortmund" />
+                      <option value="Dublin" />
+                      <option value="Málaga" />
+                      <option value="Essen" />
+                      <option value="Bremen" />
+                      <option value="Lisbon" />
+                      <option value="The Hague" />
+                      <option value="Dresden" />
+                      <option value="Genoa" />
+                      <option value="Antwerp" />
+                      <option value="Hanover" />
+                      <option value="Poznań" />
+                      <option value="Nuremberg" />
+                      <option value="Lyon" />
+                      <option value="Toulouse" />
+                      <option value="Duisburg" />
+                      <option value="Gdańsk" />
+                      <option value="Bratislava" />
+                      <option value="Murcia" />
+                      <option value="Tallinn" />
+                      <option value="Palma de Mallorca" />
+                      <option value="Brno" />
+                      <option value="Sintra" />
+                      <option value="Bologna" />
+                      <option value="Szczecin" />
+                      <option value="Las Palmas" />
+                      <option value="Utrecht" />
+                      <option value="Aarhus" />
+                      <option value="Bochum" />
+                      <option value="Florence" />
+                      <option value="Malmö" />
+                      <option value="Wuppertal" />
+                      <option value="Alicante" />
+                      <option value="Nice" />
+                      <option value="Bilbao" />
+                      <option value="Bielefeld" />
+                      <option value="Bonn" />
+                      <option value="Lublin" />
+                      <option value="Bydgoszcz" />
+                      <option value="Plovdiv" />
+                      <option value="Córdoba" />
+                      <option value="Varna" />
+                      <option value="Nantes" />
+                      <option value="Münster" />
+                      <option value="Thessaloniki" />
+                      <option value="Bari" />
+                      <option value="Mannheim" />
+                      <option value="Espoo" />
+                      <option value="Vila Nova de Gaia" />
+                      <option value="Karlsruhe" />
+                      <option value="Kaunas" />
+                      <option value="Graz" />
+                      <option value="Montpellier" />
+                      
+                      </datalist>
+                  
+                    <button type="submit">Get Weather</button>
+                  </form>
+                  ` <% if (error) { %>
+                  <p class="error"><%= error %></p>
+                  <% } else if (weather) { %>
+                  <div class="card m-auto">
+                    
+                    <%  let santigrad = (weather.main.temp - 32) * 5 / 9  %>
+                    <%  let Minsantigrad = (weather.main.temp_min - 32) * 5 / 9  %>
+                    <%  let Maxsantigrad = (weather.main.temp_max - 32) * 5 / 9  %>
+            
+                    <div>
+                      
+                        <table class="m-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 rounded-s-lg">
+                                      <span class="text-base text-gray-900"><%=weather.name%>, <%=weather.sys.country%> </span>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                      <span>Last Update: <%= convertUnixToTime(weather.dt) %></span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                                    <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                      <span>Temperature: </span>
+                                    </th>
+                                    <td class="px-6 py-3">
+                                      <%=santigrad.toFixed(2)%>&deg;S
+                                    </td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                                    <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                      <span>Min Temperature: </span>
+                                    </th>
+                                    <td class="px-6 py-3">
+                                      <%=Minsantigrad.toFixed(2)%>&deg;S
+                                    </td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                                    <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                      <span>Max Temperature: </span>
+                                    </th>
+                                    <td class="px-6 py-3">
+                                      <%=Maxsantigrad.toFixed(2)%>&deg;S
+                                    </td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                                  <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <span>Humidity: </span>
+                                  </th>
+                                  <td class="px-6 py-3">
+                                    <%=weather.main.humidity%>%
+                                  </td>
+                                  </tr>
+                                  <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                                    <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                      <span>Atmospheric pressure on the sea level: </span>
+                                    </th>
+                                    <td class="px-6 py-3">
+                                      <%=weather.main.pressure%>
+                                    </td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                                  <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <span>Weather: </span>
+                                  </th>
+                                  <td class="px-6 py-3">
+                                    <%=weather.weather[0].main%>, -- <%=weather.weather[0].description%>, -- <%=weather.weather[0].icon%>
+                                  </td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                                  <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <span>Wind Speed: </span>
+                                  </th>
+                                  <td class="px-6 py-3">
+                                  <%=weather.wind.speed%>
+                                </td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                                  <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <span>Wind Direction: </span>
+                                  </th>
+                                  <td class="px-6 py-3">
+                                    <%=weather.wind.deg%>
+                                  </td>
+                                </tr>
+                                  <% 
+                                      function convertUnixToTime(unixTimestamp) {
+                                          var date = new Date(unixTimestamp * 1000);
+                                          var hours = date.getHours();
+                                          var minutes = date.getMinutes();
+                                          var seconds = date.getSeconds();
+                                          minutes = minutes < 10 ? '0' + minutes : minutes;
+                                          seconds = seconds < 10 ? '0' + seconds : seconds;
+                                          return hours + ':' + minutes + ':' + seconds;
+                                      }
+                                  %>
+                              <tr class="bg-white dark:bg-gray-800 border-b-2 border-gray-200">
+                                <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                  <span>Sunrise time:</span>
+                                </th>
+                                <td class="px-6 py-3">
+                                  <%= convertUnixToTime(weather.sys.sunrise) %>
+                                </td>
+                              </tr>
+                              <tr class="bg-white dark:bg-gray-800">
+                                <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                  <span>Sunset time:</span>
+                                </th>
+                                <td class="px-6 py-3">
+                                  <%= convertUnixToTime(weather.sys.sunset) %>
+                                </td>
+                              </tr>
+                            </tbody>
+                        </table>
+                      
+                    </div>
+                  </div>
+                  <% } %>
+                </div>
+                  
+              </div>
+            </div>
+          </div>
           
         </div>
       </div>
-      <% } %>
-    </div>
-  </body>
+      
+</body>
 </html>
